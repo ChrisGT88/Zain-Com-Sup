@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Order Ticket Form</title>
+  <title>Create a Ticket</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -62,10 +62,13 @@
   </form>
 
   <script>
+    // Attach event listener to the form
     document.getElementById('ticketForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
+      e.preventDefault(); // Prevent the default form submission
 
-      const webhookURL = "https://hooks.slack.com/triggers/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"; // Replace with your Slack webhook URL
+      console.log('Submit button clicked!'); // Debugging log
+
+      const webhookURL = "YOUR_SLACK_WEBHOOK_URL"; // Replace with your Slack webhook URL
 
       const data = {
         orderNumber: document.getElementById('orderNumber').value,
@@ -74,23 +77,26 @@
         ticketDescription: document.getElementById('ticketDescription').value
       };
 
+      console.log('Collected data:', data); // Debugging log
+
       try {
         const response = await fetch(webhookURL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            text: `New Ticket Submitted:\nOrder Number: ${data.orderNumber}\nTicket Type: ${data.ticketType}\nTicket SLA: ${data.ticketSLA}\nTicket Description: ${data.ticketDescription}`
+            text: `🎫 *New Ticket Submitted* 🎫\n*Order Number:* ${data.orderNumber}\n*Ticket Type:* ${data.ticketType}\n*SLA:* ${data.ticketSLA}\n*Description:* ${data.ticketDescription}`
           })
         });
 
         if (response.ok) {
           alert('Your ticket has been submitted!');
         } else {
-          alert('There was a problem submitting your ticket.');
+          const errorText = await response.text();
+          alert(`There was a problem submitting your ticket. Server responded with: ${response.status} ${response.statusText} - ${errorText}`);
         }
       } catch (error) {
+        alert(`There was an error: ${error.message}`);
         console.error('Error:', error);
-        alert('There was an error. Please try again.');
       }
     });
   </script>
