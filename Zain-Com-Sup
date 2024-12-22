@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Ticket Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin: 10px 0 5px;
+    }
+    input, select, textarea, button {
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 1em;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Create a Ticket</h1>
+  <form id="ticketForm">
+    <label for="orderNumber">Order Number:</label>
+    <input type="number" id="orderNumber" name="orderNumber" required />
+
+    <label for="ticketType">Ticket Type:</label>
+    <select id="ticketType" name="ticketType" required>
+      <option value="Cancel Order">Cancel Order</option>
+    </select>
+
+    <label for="ticketSLA">Ticket SLA:</label>
+    <select id="ticketSLA" name="ticketSLA" required>
+      <option value="Urgent">Urgent</option>
+      <option value="Normal">Normal</option>
+    </select>
+
+    <label for="ticketDescription">Ticket Description:</label>
+    <textarea id="ticketDescription" name="ticketDescription" rows="5" required></textarea>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    document.getElementById('ticketForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const webhookURL = "YOUR_SLACK_WEBHOOK_URL"; // Replace with your Slack webhook URL
+
+      const data = {
+        orderNumber: document.getElementById('orderNumber').value,
+        ticketType: document.getElementById('ticketType').value,
+        ticketSLA: document.getElementById('ticketSLA').value,
+        ticketDescription: document.getElementById('ticketDescription').value
+      };
+
+      try {
+        const response = await fetch(webhookURL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: `New Ticket Submitted:\nOrder Number: ${data.orderNumber}\nTicket Type: ${data.ticketType}\nTicket SLA: ${data.ticketSLA}\nTicket Description: ${data.ticketDescription}`
+          })
+        });
+
+        if (response.ok) {
+          alert('Your ticket has been submitted!');
+        } else {
+          alert('There was a problem submitting your ticket.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('There was an error. Please try again.');
+      }
+    });
+  </script>
+</body>
+</html>
